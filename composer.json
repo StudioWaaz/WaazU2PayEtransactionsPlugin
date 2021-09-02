@@ -41,8 +41,8 @@
     },
     "autoload": {
         "psr-4": {
-            "Waaz\\EtransactionsPlugin\\": "src/",
-            "Tests\\Waaz\\EtransactionsPlugin\\": "tests/"
+            "Waaz\\U2PayEtransactionsPlugin\\": "src/",
+            "Tests\\Waaz\\U2PayEtransactionsPlugin\\": "tests/"
         }
     },
     "autoload-dev": {
