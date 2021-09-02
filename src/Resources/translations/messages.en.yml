@@ -1,0 +1,8 @@
+waaz:
+    etransactions:
+        hmac: Hmac
+        identifiant: Identifiant
+        gateway_label: Etransactions
+        sandbox: Sandbox Mode?
+        rang: Rang number
+        site: Site number

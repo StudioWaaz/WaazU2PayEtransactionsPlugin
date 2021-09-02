@@ -1,0 +1,12 @@
+waaz:
+    etransactions:
+        identifiant:
+            not_blank: Please enter the Identifiant number.
+        hmac:
+            not_blank: Please enter the Hmac string.
+        channel:
+            currency: The only allowed currency is EUR.
+        site:
+            not_blank: Please enter the site number.
+        rang:
+            not_blank: Please enter the rang number.

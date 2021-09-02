@@ -1,0 +1,46 @@
+services:
+    waaz.etransactions.form.type.gateway_configuration:
+        class: Waaz\U2PayEtransactionsPlugin\Form\Type\EtransactionsGatewayConfigurationType
+        public: true
+        tags:
+            - { name: sylius.gateway_configuration_type, type: etransactions, label: waaz.etransactions.gateway_label }
+            - { name: form.type }
+
+    waaz.etransactions.gateway_factory:
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        arguments: [Waaz\U2PayEtransactionsPlugin\EtransactionsGatewayFactory]
+        public: true
+        tags:
+            - { name: payum.gateway_factory_builder, factory: etransactions }
+
+    waaz.etransactions.action.capture:
+        class: Waaz\U2PayEtransactionsPlugin\Action\CaptureAction
+        public: true
+        arguments:
+            - '@payum'
+            - '@waaz.etransactions.bridge.etransactions_bridge'
+        tags:
+            - { name: payum.action, factory: etransactions, alias: payum.action.capture }
+
+    waaz.etransactions.action.notify:
+        class: Waaz\U2PayEtransactionsPlugin\Action\NotifyAction
+        public: true
+        arguments:
+            - '@waaz.etransactions.bridge.etransactions_bridge'
+            - '@sm.factory'
+        tags:
+            - { name: payum.action, factory: etransactions, alias: payum.action.notify }
+
+    waaz.etransactions.action.status:
+        class: Waaz\U2PayEtransactionsPlugin\Action\StatusAction
+        public: true
+        arguments:
+            - '@request_stack'
+        tags:
+            - { name: payum.action, factory: etransactions, alias: payum.action.status }
+
+    waaz.etransactions.bridge.etransactions_bridge:
+        class: Waaz\U2PayEtransactionsPlugin\Bridge\EtransactionsBridge
+        public: true
+        arguments:
+            - '@request_stack'
