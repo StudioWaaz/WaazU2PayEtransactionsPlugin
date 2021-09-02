@@ -1,5 +1,5 @@
 {
-    "name": "waaz/etransactions-plugin",
+    "name": "waaz/u2pay-etransactions-plugin",
     "type": "sylius-plugin",
     "keywords": ["sylius", "sylius-plugin"],
     "description": "Acme example plugin for Sylius.",
