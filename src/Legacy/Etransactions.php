@@ -14,30 +14,76 @@ use Payum\Core\Reply\HttpPostRedirect;
  */
 class Etransactions
 {
-    public const TEST = "https://recette-tpeweb.e-transactions.fr/php/";
-    public const PRODUCTION = "https://tpeweb.e-transactions.fr/php/";
+    const TEST = "https://recette-tpeweb.e-transactions.fr/php/";
+    const PRODUCTION = "https://tpeweb.e-transactions.fr/php/";
 
     // const TEST = "https://recette-tpeweb.e-transactions.fr/php/";
     // const PRODUCTION = "https://tpeweb.e-transactions.fr/php/";
 
-    public const INTERFACE_VERSION = "IR_WS_2.17";
-    public const INSTALMENT = "INSTALMENT";
+    const INTERFACE_VERSION = "IR_WS_2.17";
+    const INSTALMENT = "INSTALMENT";
 
     // BYPASS3DS
-    public const BYPASS3DS_ALL = "ALL";
-    public const BYPASS3DS_MERCHANTWALLET = "MERCHANTWALLET";
+    const BYPASS3DS_ALL = "ALL";
+    const BYPASS3DS_MERCHANTWALLET = "MERCHANTWALLET";
 
-    private array $brandsmap = ['ACCEPTGIRO' => 'CREDIT_TRANSFER', 'AMEX' => 'CARD', 'BCMC' => 'CARD', 'BUYSTER' => 'CARD', 'BANK CARD' => 'CARD', 'CB' => 'CARD', 'IDEAL' => 'CREDIT_TRANSFER', 'INCASSO' => 'DIRECT_DEBIT', 'MAESTRO' => 'CARD', 'MASTERCARD' => 'CARD', 'MASTERPASS' => 'CARD', 'MINITIX' => 'OTHER', 'NETBANKING' => 'CREDIT_TRANSFER', 'PAYPAL' => 'CARD', 'PAYLIB' => 'CARD', 'REFUND' => 'OTHER', 'SDD' => 'DIRECT_DEBIT', 'SOFORT' => 'CREDIT_TRANSFER', 'VISA' => 'CARD', 'VPAY' => 'CARD', 'VISA ELECTRON' => 'CARD', 'CBCONLINE' => 'CREDIT_TRANSFER', 'KBCONLINE' => 'CREDIT_TRANSFER'];
+    private $brandsmap = array(
+        'ACCEPTGIRO' => 'CREDIT_TRANSFER',
+        'AMEX' => 'CARD',
+        'BCMC' => 'CARD',
+        'BUYSTER' => 'CARD',
+        'BANK CARD' => 'CARD',
+        'CB' => 'CARD',
+        'IDEAL' => 'CREDIT_TRANSFER',
+        'INCASSO' => 'DIRECT_DEBIT',
+        'MAESTRO' => 'CARD',
+        'MASTERCARD' => 'CARD',
+        'MASTERPASS' => 'CARD',
+        'MINITIX' => 'OTHER',
+        'NETBANKING' => 'CREDIT_TRANSFER',
+        'PAYPAL' => 'CARD',
+        'PAYLIB' => 'CARD',
+        'REFUND' => 'OTHER',
+        'SDD' => 'DIRECT_DEBIT',
+        'SOFORT' => 'CREDIT_TRANSFER',
+        'VISA' => 'CARD',
+        'VPAY' => 'CARD',
+        'VISA ELECTRON' => 'CARD',
+        'CBCONLINE' => 'CREDIT_TRANSFER',
+        'KBCONLINE' => 'CREDIT_TRANSFER'
+    );
+
+    /** @var ShaComposer */
+    private $hmac;
 
     private $pspURL = self::TEST;
 
     private $responseData;
 
-    private array $parameters = [];
+    private $parameters = array();
 
-    private array $pspFields = ['amount', 'cardExpiryDate', 'cardNumber', 'cardCSCValue', 'currencyCode', 'merchantId', 'interfaceVersion', 'sealAlgorithm', 'transactionReference', 'keyVersion', 'paymentMeanBrand', 'customerLanguage', 'billingAddress.city', 'billingAddress.company', 'billingAddress.country', 'billingAddress', 'billingAddress.postBox', 'billingAddress.state', 'billingAddress.street', 'billingAddress.streetNumber', 'billingAddress.zipCode', 'billingContact.email', 'billingContact.firstname', 'billingContact.gender', 'billingContact.lastname', 'billingContact.mobile', 'billingContact.phone', 'customerAddress', 'customerAddress.city', 'customerAddress.company', 'customerAddress.country', 'customerAddress.postBox', 'customerAddress.state', 'customerAddress.street', 'customerAddress.streetNumber', 'customerAddress.zipCode', 'customerEmail', 'customerContact', 'customerContact.email', 'customerContact.firstname', 'customerContact.gender', 'customerContact.lastname', 'customerContact.mobile', 'customerContact.phone', 'customerContact.title', 'expirationDate', 'automaticResponseUrl', 'templateName', 'paymentMeanBrandList', 'instalmentData.number', 'instalmentData.datesList', 'instalmentData.transactionReferencesList', 'instalmentData.amountsList', 'paymentPattern', 'captureDay', 'captureMode', 'merchantTransactionDateTime', 'fraudData.bypass3DS', 'seal', 'orderChannel', 'orderId', 'returnContext', 'transactionOrigin', 'merchantWalletId', 'paymentMeanId'];
+    private $pspFields = array(
+        'amount', 'cardExpiryDate', 'cardNumber', 'cardCSCValue',
+        'currencyCode', 'merchantId', 'interfaceVersion', 'sealAlgorithm',
+        'transactionReference', 'keyVersion', 'paymentMeanBrand', 'customerLanguage',
+        'billingAddress.city', 'billingAddress.company', 'billingAddress.country',
+        'billingAddress', 'billingAddress.postBox', 'billingAddress.state',
+        'billingAddress.street', 'billingAddress.streetNumber', 'billingAddress.zipCode',
+        'billingContact.email', 'billingContact.firstname', 'billingContact.gender',
+        'billingContact.lastname', 'billingContact.mobile', 'billingContact.phone',
+        'customerAddress', 'customerAddress.city', 'customerAddress.company',
+        'customerAddress.country', 'customerAddress.postBox', 'customerAddress.state',
+        'customerAddress.street', 'customerAddress.streetNumber', 'customerAddress.zipCode',
+        'customerEmail', 'customerContact', 'customerContact.email', 'customerContact.firstname',
+        'customerContact.gender', 'customerContact.lastname', 'customerContact.mobile',
+        'customerContact.phone', 'customerContact.title', 'expirationDate', 'automaticResponseUrl',
+        'templateName', 'paymentMeanBrandList', 'instalmentData.number', 'instalmentData.datesList',
+        'instalmentData.transactionReferencesList', 'instalmentData.amountsList', 'paymentPattern',
+        'captureDay', 'captureMode', 'merchantTransactionDateTime', 'fraudData.bypass3DS', 'seal',
+        'orderChannel', 'orderId', 'returnContext', 'transactionOrigin', 'merchantWalletId', 'paymentMeanId'
+    );
 
-    private array $requiredFields = [
+    private $requiredFields = [
         PayBoxRequestParams::PBX_SITE,
         PayBoxRequestParams::PBX_RANG,
         PayBoxRequestParams::PBX_IDENTIFIANT,
@@ -50,12 +96,23 @@ class Etransactions
         PayBoxRequestParams::PBX_TIME,
         PayBoxRequestParams::PBX_REPONDRE_A,
         PayBoxRequestParams::PBX_SOURCE,
+        PayBoxRequestParams::PBX_BILLING,
+        PayBoxRequestParams::PBX_SHOPPINGCART
     ];
 
 
-    public $allowedlanguages = ['nl', 'fr', 'de', 'it', 'es', 'cy', 'en'];
+    public $allowedlanguages = array(
+        'nl', 'fr', 'de', 'it', 'es', 'cy', 'en'
+    );
 
-    private static array $currencies = ['EUR' => '978', 'USD' => '840', 'CHF' => '756', 'GBP' => '826', 'CAD' => '124', 'JPY' => '392', 'MXP' => '484', 'TRY' => '949', 'AUD' => '036', 'NZD' => '554', 'NOK' => '578', 'BRC' => '986', 'ARP' => '032', 'KHR' => '116', 'TWD' => '901', 'SEK' => '752', 'DKK' => '208', 'KRW' => '410', 'SGD' => '702', 'XPF' => '953', 'XOF' => '952'];
+    private static $currencies = array(
+        'EUR' => '978', 'USD' => '840', 'CHF' => '756', 'GBP' => '826',
+        'CAD' => '124', 'JPY' => '392', 'MXP' => '484', 'TRY' => '949',
+        'AUD' => '036', 'NZD' => '554', 'NOK' => '578', 'BRC' => '986',
+        'ARP' => '032', 'KHR' => '116', 'TWD' => '901', 'SEK' => '752',
+        'DKK' => '208', 'KRW' => '410', 'SGD' => '702', 'XPF' => '953',
+        'XOF' => '952'
+    );
 
     public static function convertCurrencyToCurrencyCode($currency)
     {
@@ -76,11 +133,9 @@ class Etransactions
         return self::$currencies;
     }
 
-    /**
-     * @param ShaComposer $hmac
-     */
-    public function __construct(private $hmac)
+    public function __construct($hmac)
     {
+        $this->hmac = $hmac;
     }
 
     /** @return string */
@@ -150,7 +205,7 @@ class Etransactions
     {
         $this->parameters[PayBoxRequestParams::PBX_SITE] = $site;
     }
-    
+
     public function setCurrency($currency)
     {
         if (!array_key_exists(strtoupper($currency), self::getCurrencies())) {
@@ -213,12 +268,15 @@ class Etransactions
     // -----------------------------------
 
     /** @var string */
-    public const SHASIGN_FIELD = "SEAL";
+    const SHASIGN_FIELD = "SEAL";
 
     /** @var string */
-    public const DATA_FIELD = "DATA";
+    const DATA_FIELD = "DATA";
 
-    private ?string $shaSign = null;
+    /**
+     * @var string
+     */
+    private $shaSign;
 
     private $dataString;
 
@@ -228,6 +286,7 @@ class Etransactions
 
     /**
      * Filter http request parameters
+     * @param array $httpRequest
      * @return array
      */
     private function filterRequestParameters(array $httpRequest)
@@ -236,7 +295,7 @@ class Etransactions
         if (!array_key_exists(self::DATA_FIELD, $httpRequest) || $httpRequest[self::DATA_FIELD] == '') {
             throw new \InvalidArgumentException('Data parameter not present in parameters.');
         }
-        $parameters = [];
+        $parameters = array();
         $this->responseData = $httpRequest[self::DATA_FIELD];
         $dataString = $httpRequest[self::DATA_FIELD];
         $this->dataString = $dataString;
@@ -270,7 +329,7 @@ class Etransactions
     public function isValid($post_data, $ip)
     {
         $ip = str_replace('::ffff:', '', $ip); //ipv4 format
-        if ($post_data['error_code'] == '00000' && in_array($ip, ['195.101.99.73', '195.101.99.76', '194.2.160.69', '194.2.160.76', '195.25.7.158', '195.25.7.149', '194.2.122.158', '194.2.122.190', '195.101.99.76', '195.25.67.22', '195.25.7.166', '195.101.99.67', '194.2.160.81', '194.2.160.89', '195.25.67.9', '195.25.67.1', '195.25.7.145', '194.2.160.90', '195.25.67.10']))
+        if ($post_data['error_code'] == '00000' && in_array($ip, array('195.101.99.73', '195.101.99.76', '194.2.160.69', '194.2.160.76', '195.25.7.158', '195.25.7.149', '194.2.122.158', '194.2.122.190', '195.101.99.76', '195.25.67.22', '195.25.7.166', '195.101.99.67', '194.2.160.81', '194.2.160.89', '195.25.67.9', '195.25.67.1', '195.25.7.145', '194.2.160.90', '195.25.67.10')))
         {
           return true;
         }
@@ -280,11 +339,10 @@ class Etransactions
 
     function getXmlValueByTag($inXmlset, $needle)
     {
-        $tagValue = null;
         $resource = xml_parser_create();//Create an XML parser
         xml_parse_into_struct($resource, $inXmlset, $outArray);// Parse XML data into an array structure
         xml_parser_free($resource);//Free an XML parser
-        for ($i = 0; $i < (is_countable($outArray) ? count($outArray) : 0); $i++) {
+        for ($i = 0; $i < count($outArray); $i++) {
             if ($outArray[$i]['tag'] == strtoupper($needle)) {
                 $tagValue = $outArray[$i]['value'];
             }
@@ -324,12 +382,13 @@ class Etransactions
     /**
      * Makes an array of parameters become a querystring like string.
      *
+     * @param  array $array
      *
      * @return string
      */
     static public function stringify(array $array)
     {
-        $result = [];
+        $result = array();
         foreach ($array as $key => $value) {
             $result[] = sprintf('%s=%s', $key, $value);
         }
@@ -349,5 +408,42 @@ class Etransactions
         throw new HttpPostRedirect($this->getUrl(), $fields);
     }
 
+    public function setShoppingCartTotal(int $total)
+    {
+        $this->parameters[PayBoxRequestParams::PBX_SHOPPINGCART] = $this->getXmlShoppingCart($total);
+    }
 
+    private function getXmlShoppingCart(int $total)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<shoppingcart>';
+        $xml .= '<total>';
+        $xml .= '<totalQuantity>' . $total . '</totalQuantity>';
+        $xml .= '</total>';
+        $xml .= '</shoppingcart>';
+
+        return $xml;
+    }
+
+    public function setBilling(array $billingInfo)
+    {
+        $this->parameters[PayBoxRequestParams::PBX_BILLING] = $this->getXmlBilling($billingInfo);
+    }
+
+    private function getXmlBilling(array $billing)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+        $xml .= '<Billing>';
+        $xml .= '<Address>';
+        $xml .= '<FirstName>' . $billing['firstName'] . '</FirstName>';
+        $xml .= '<LastName>' . $billing['lastName'] . '</LastName>';
+        $xml .= '<Address1>' . $billing['address1'] . '</Address1>';
+        $xml .= '<ZipCode>' . $billing['zipCode'] . '</ZipCode>';
+        $xml .= '<City>' . $billing['city'] . '</City>';
+        $xml .= '<CountryCode>' . $billing['countryCode'] . '</CountryCode>';
+        $xml .= '</Address>';
+        $xml .= '</Billing>';
+
+        return $xml;
+    }
 }

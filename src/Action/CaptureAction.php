@@ -34,10 +34,29 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
 {
     use GatewayAwareTrait;
 
-    private array $api = [];
+    private $api = [];
 
-    public function __construct(private Payum $payum, private EtransactionsBridgeInterface $etransactionsBridge)
+    /**
+     * @var Payum
+     */
+    private $payum;
+
+    /**
+     * @var EtransactionsBridgeInterface
+     */
+    private $etransactionsBridge;
+
+    /**
+     * @param Payum $payum
+     * @param EtransactionsBridgeInterface $etransactionsBridge
+     */
+    public function __construct(
+        Payum $payum,
+        EtransactionsBridgeInterface $etransactionsBridge
+    )
     {
+        $this->etransactionsBridge = $etransactionsBridge;
+        $this->payum = $payum;
     }
 
     /**
@@ -75,7 +94,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
         /** @var TokenInterface $token */
         $token = $request->getToken();
 
-        $transactionReference = $model['transactionReference'] ?? null;
+        $transactionReference = isset($model['transactionReference']) ? $model['transactionReference'] : null;
 
         if ($transactionReference !== null) {
 
@@ -126,7 +145,8 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface
             $currencyCode,
             $transactionReference,
             $customerEmail,
-            $automaticResponseUrl
+            $automaticResponseUrl,
+            $order
         );
 
         $request->setModel($model);
