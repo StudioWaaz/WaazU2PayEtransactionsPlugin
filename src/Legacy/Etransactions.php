@@ -14,18 +14,18 @@ use Payum\Core\Reply\HttpPostRedirect;
  */
 class Etransactions
 {
-    const TEST = "https://recette-tpeweb.e-transactions.fr/php/";
-    const PRODUCTION = "https://tpeweb.e-transactions.fr/php/";
+    const TEST = 'https://recette-tpeweb.e-transactions.fr/php/';
+    const PRODUCTION = 'https://tpeweb.e-transactions.fr/php/';
 
     // const TEST = "https://recette-tpeweb.e-transactions.fr/php/";
     // const PRODUCTION = "https://tpeweb.e-transactions.fr/php/";
 
-    const INTERFACE_VERSION = "IR_WS_2.17";
-    const INSTALMENT = "INSTALMENT";
+    const INTERFACE_VERSION = 'IR_WS_2.17';
+    const INSTALMENT = 'INSTALMENT';
 
     // BYPASS3DS
-    const BYPASS3DS_ALL = "ALL";
-    const BYPASS3DS_MERCHANTWALLET = "MERCHANTWALLET";
+    const BYPASS3DS_ALL = 'ALL';
+    const BYPASS3DS_MERCHANTWALLET = 'MERCHANTWALLET';
 
     private $brandsmap = array(
         'ACCEPTGIRO' => 'CREDIT_TRANSFER',
@@ -50,7 +50,7 @@ class Etransactions
         'VPAY' => 'CARD',
         'VISA ELECTRON' => 'CARD',
         'CBCONLINE' => 'CREDIT_TRANSFER',
-        'KBCONLINE' => 'CREDIT_TRANSFER'
+        'KBCONLINE' => 'CREDIT_TRANSFER',
     );
 
     /** @var ShaComposer */
@@ -63,24 +63,71 @@ class Etransactions
     private $parameters = array();
 
     private $pspFields = array(
-        'amount', 'cardExpiryDate', 'cardNumber', 'cardCSCValue',
-        'currencyCode', 'merchantId', 'interfaceVersion', 'sealAlgorithm',
-        'transactionReference', 'keyVersion', 'paymentMeanBrand', 'customerLanguage',
-        'billingAddress.city', 'billingAddress.company', 'billingAddress.country',
-        'billingAddress', 'billingAddress.postBox', 'billingAddress.state',
-        'billingAddress.street', 'billingAddress.streetNumber', 'billingAddress.zipCode',
-        'billingContact.email', 'billingContact.firstname', 'billingContact.gender',
-        'billingContact.lastname', 'billingContact.mobile', 'billingContact.phone',
-        'customerAddress', 'customerAddress.city', 'customerAddress.company',
-        'customerAddress.country', 'customerAddress.postBox', 'customerAddress.state',
-        'customerAddress.street', 'customerAddress.streetNumber', 'customerAddress.zipCode',
-        'customerEmail', 'customerContact', 'customerContact.email', 'customerContact.firstname',
-        'customerContact.gender', 'customerContact.lastname', 'customerContact.mobile',
-        'customerContact.phone', 'customerContact.title', 'expirationDate', 'automaticResponseUrl',
-        'templateName', 'paymentMeanBrandList', 'instalmentData.number', 'instalmentData.datesList',
-        'instalmentData.transactionReferencesList', 'instalmentData.amountsList', 'paymentPattern',
-        'captureDay', 'captureMode', 'merchantTransactionDateTime', 'fraudData.bypass3DS', 'seal',
-        'orderChannel', 'orderId', 'returnContext', 'transactionOrigin', 'merchantWalletId', 'paymentMeanId'
+        'amount',
+        'cardExpiryDate',
+        'cardNumber',
+        'cardCSCValue',
+        'currencyCode',
+        'merchantId',
+        'interfaceVersion',
+        'sealAlgorithm',
+        'transactionReference',
+        'keyVersion',
+        'paymentMeanBrand',
+        'customerLanguage',
+        'billingAddress.city',
+        'billingAddress.company',
+        'billingAddress.country',
+        'billingAddress',
+        'billingAddress.postBox',
+        'billingAddress.state',
+        'billingAddress.street',
+        'billingAddress.streetNumber',
+        'billingAddress.zipCode',
+        'billingContact.email',
+        'billingContact.firstname',
+        'billingContact.gender',
+        'billingContact.lastname',
+        'billingContact.mobile',
+        'billingContact.phone',
+        'customerAddress',
+        'customerAddress.city',
+        'customerAddress.company',
+        'customerAddress.country',
+        'customerAddress.postBox',
+        'customerAddress.state',
+        'customerAddress.street',
+        'customerAddress.streetNumber',
+        'customerAddress.zipCode',
+        'customerEmail',
+        'customerContact',
+        'customerContact.email',
+        'customerContact.firstname',
+        'customerContact.gender',
+        'customerContact.lastname',
+        'customerContact.mobile',
+        'customerContact.phone',
+        'customerContact.title',
+        'expirationDate',
+        'automaticResponseUrl',
+        'templateName',
+        'paymentMeanBrandList',
+        'instalmentData.number',
+        'instalmentData.datesList',
+        'instalmentData.transactionReferencesList',
+        'instalmentData.amountsList',
+        'paymentPattern',
+        'captureDay',
+        'captureMode',
+        'merchantTransactionDateTime',
+        'fraudData.bypass3DS',
+        'seal',
+        'orderChannel',
+        'orderId',
+        'returnContext',
+        'transactionOrigin',
+        'merchantWalletId',
+        'paymentMeanId',
     );
 
     private $requiredFields = [
@@ -97,21 +144,41 @@ class Etransactions
         PayBoxRequestParams::PBX_REPONDRE_A,
         PayBoxRequestParams::PBX_SOURCE,
         PayBoxRequestParams::PBX_BILLING,
-        PayBoxRequestParams::PBX_SHOPPINGCART
+        PayBoxRequestParams::PBX_SHOPPINGCART,
     ];
 
-
     public $allowedlanguages = array(
-        'nl', 'fr', 'de', 'it', 'es', 'cy', 'en'
+        'nl',
+        'fr',
+        'de',
+        'it',
+        'es',
+        'cy',
+        'en',
     );
 
     private static $currencies = array(
-        'EUR' => '978', 'USD' => '840', 'CHF' => '756', 'GBP' => '826',
-        'CAD' => '124', 'JPY' => '392', 'MXP' => '484', 'TRY' => '949',
-        'AUD' => '036', 'NZD' => '554', 'NOK' => '578', 'BRC' => '986',
-        'ARP' => '032', 'KHR' => '116', 'TWD' => '901', 'SEK' => '752',
-        'DKK' => '208', 'KRW' => '410', 'SGD' => '702', 'XPF' => '953',
-        'XOF' => '952'
+        'EUR' => '978',
+        'USD' => '840',
+        'CHF' => '756',
+        'GBP' => '826',
+        'CAD' => '124',
+        'JPY' => '392',
+        'MXP' => '484',
+        'TRY' => '949',
+        'AUD' => '036',
+        'NZD' => '554',
+        'NOK' => '578',
+        'BRC' => '986',
+        'ARP' => '032',
+        'KHR' => '116',
+        'TWD' => '901',
+        'SEK' => '752',
+        'DKK' => '208',
+        'KRW' => '410',
+        'SGD' => '702',
+        'XPF' => '953',
+        'XOF' => '952',
     );
 
     public static function convertCurrencyToCurrencyCode($currency)
@@ -165,7 +232,7 @@ class Etransactions
     public function setTransactionReference($transactionReference)
     {
         if (preg_match('/[^a-zA-Z0-9_-]/', $transactionReference)) {
-            throw new \InvalidArgumentException("TransactionReference cannot contain special characters");
+            throw new \InvalidArgumentException('TransactionReference cannot contain special characters');
         }
         $this->parameters[PayBoxRequestParams::PBX_CMD] = $transactionReference;
     }
@@ -176,19 +243,17 @@ class Etransactions
     public function setAmount($amount)
     {
         if (!is_int($amount)) {
-            throw new \InvalidArgumentException("Integer expected. Amount is always in cents");
+            throw new \InvalidArgumentException('Integer expected. Amount is always in cents');
         }
         if ($amount <= 0) {
-            throw new \InvalidArgumentException("Amount must be a positive number");
+            throw new \InvalidArgumentException('Amount must be a positive number');
         }
         $this->parameters[PayBoxRequestParams::PBX_TOTAL] = $amount;
-
     }
 
     public function setSource($source)
     {
         $this->parameters[PayBoxRequestParams::PBX_SOURCE] = $source;
-
     }
 
     public function setIdentifiant($identifiant)
@@ -209,7 +274,7 @@ class Etransactions
     public function setCurrency($currency)
     {
         if (!array_key_exists(strtoupper($currency), self::getCurrencies())) {
-            throw new \InvalidArgumentException("Unknown currency");
+            throw new \InvalidArgumentException('Unknown currency');
         }
         $this->parameters[PayBoxRequestParams::PBX_DEVISE] = self::convertCurrencyToCurrencyCode($currency);
     }
@@ -217,10 +282,10 @@ class Etransactions
     public function setBillingContactEmail($email)
     {
         if (strlen($email) > 50) {
-            throw new \InvalidArgumentException("Email is too long");
+            throw new \InvalidArgumentException('Email is too long');
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException("Email is invalid");
+            throw new \InvalidArgumentException('Email is invalid');
         }
         $this->parameters[PayBoxRequestParams::PBX_PORTEUR] = $email;
     }
@@ -228,7 +293,7 @@ class Etransactions
     public function setMerchantTransactionDateTime($value)
     {
         if (strlen($value) > 25) {
-            throw new \InvalidArgumentException("merchantTransactionDateTime is too long");
+            throw new \InvalidArgumentException('merchantTransactionDateTime is too long');
         }
         $this->parameters[PayBoxRequestParams::PBX_TIME] = $value;
     }
@@ -237,7 +302,6 @@ class Etransactions
     {
         $this->parameters[PayBoxRequestParams::PBX_HASH] = $value;
     }
-
 
     public function toArray()
     {
@@ -249,7 +313,7 @@ class Etransactions
     {
         foreach ($this->requiredFields as $field) {
             if (empty($this->parameters[$field])) {
-                throw new \RuntimeException($field . " can not be empty");
+                throw new \RuntimeException($field . ' can not be empty');
             }
         }
     }
@@ -257,10 +321,10 @@ class Etransactions
     protected function validateUri($uri)
     {
         if (!filter_var($uri, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException("Uri is not valid");
+            throw new \InvalidArgumentException('Uri is not valid');
         }
         if (strlen($uri) > 200) {
-            throw new \InvalidArgumentException("Uri is too long");
+            throw new \InvalidArgumentException('Uri is too long');
         }
     }
 
@@ -268,10 +332,10 @@ class Etransactions
     // -----------------------------------
 
     /** @var string */
-    const SHASIGN_FIELD = "SEAL";
+    const SHASIGN_FIELD = 'SEAL';
 
     /** @var string */
-    const DATA_FIELD = "DATA";
+    const DATA_FIELD = 'DATA';
 
     /**
      * @var string
@@ -329,9 +393,33 @@ class Etransactions
     public function isValid($post_data, $ip)
     {
         $ip = str_replace('::ffff:', '', $ip); //ipv4 format
-        if ($post_data['error_code'] == '00000' && in_array($ip, array('195.101.99.73', '195.101.99.76', '194.2.160.69', '194.2.160.76', '195.25.7.158', '195.25.7.149', '194.2.122.158', '194.2.122.190', '195.101.99.76', '195.25.67.22', '195.25.7.166', '195.101.99.67', '194.2.160.81', '194.2.160.89', '195.25.67.9', '195.25.67.1', '195.25.7.145', '194.2.160.90', '195.25.67.10')))
-        {
-          return true;
+        if (
+            $post_data['error_code'] == '00000'
+            && in_array($ip, array(
+                '195.101.99.73',
+                '195.101.99.76',
+                '194.2.160.69',
+                '194.2.160.76',
+                '195.25.7.158',
+                '195.25.7.149',
+                '194.2.122.158',
+                '194.2.122.190',
+                '195.101.99.76',
+                '195.25.67.22',
+                '195.25.7.166',
+                '195.101.99.67',
+                '194.2.160.81',
+                '194.2.160.89',
+                '195.25.67.9',
+                '195.25.67.1',
+                '195.25.7.145',
+                '194.2.160.90',
+                '195.25.67.10',
+                '62.161.13.193',
+                '62.161.15.193',
+            ))
+        ) {
+            return true;
         }
 
         return false;
@@ -339,9 +427,9 @@ class Etransactions
 
     function getXmlValueByTag($inXmlset, $needle)
     {
-        $resource = xml_parser_create();//Create an XML parser
-        xml_parse_into_struct($resource, $inXmlset, $outArray);// Parse XML data into an array structure
-        xml_parser_free($resource);//Free an XML parser
+        $resource = xml_parser_create(); //Create an XML parser
+        xml_parse_into_struct($resource, $inXmlset, $outArray); // Parse XML data into an array structure
+        xml_parser_free($resource); //Free an XML parser
         for ($i = 0; $i < count($outArray); $i++) {
             if ($outArray[$i]['tag'] == strtoupper($needle)) {
                 $tagValue = $outArray[$i]['value'];
@@ -365,7 +453,7 @@ class Etransactions
         return $this->responseRequest;
     }
 
-     /**
+    /**
      * @param $hmac string hmac key
      * @param $fields array fields
      * @return string
@@ -373,7 +461,7 @@ class Etransactions
     protected function computeHmac($hmac, $fields)
     {
         // Si la clé est en ASCII, On la transforme en binaire
-        $binKey = pack("H*", $hmac);
+        $binKey = pack('H*', $hmac);
         $msg = self::stringify($fields);
 
         return strtoupper(hash_hmac($fields[PayBoxRequestParams::PBX_HASH], $msg, $binKey));
@@ -386,7 +474,7 @@ class Etransactions
      *
      * @return string
      */
-    static public function stringify(array $array)
+    public static function stringify(array $array)
     {
         $result = array();
         foreach ($array as $key => $value) {
@@ -443,12 +531,31 @@ class Etransactions
             // Fallback: basic accent removal and uppercase conversion
             $value = strtoupper($value);
             $accents = [
-                'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'A', 'Å' => 'A',
-                'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E',
-                'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I',
-                'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'O',
-                'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'U',
-                'Ç' => 'C', 'Ñ' => 'N'
+                'À' => 'A',
+                'Á' => 'A',
+                'Â' => 'A',
+                'Ã' => 'A',
+                'Ä' => 'A',
+                'Å' => 'A',
+                'È' => 'E',
+                'É' => 'E',
+                'Ê' => 'E',
+                'Ë' => 'E',
+                'Ì' => 'I',
+                'Í' => 'I',
+                'Î' => 'I',
+                'Ï' => 'I',
+                'Ò' => 'O',
+                'Ó' => 'O',
+                'Ô' => 'O',
+                'Õ' => 'O',
+                'Ö' => 'O',
+                'Ù' => 'U',
+                'Ú' => 'U',
+                'Û' => 'U',
+                'Ü' => 'U',
+                'Ç' => 'C',
+                'Ñ' => 'N',
             ];
             $value = strtr($value, $accents);
         }
